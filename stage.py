@@ -9,69 +9,76 @@ from mlflow.tracking import MlflowClient
 from prefect.task_runners import SequentialTaskRunner
 
 
-@task(name="Register and stage best model")
+@task(name="Register and stage best emotion model")
 def stage_model(tracking_uri, experiment_name):
-    """Register and stage best model."""
+    """Register and stage the best emotion recognition model."""
     logger = get_run_logger()
 
-    # Get best model from current experiment
-    logger.info("Getting best model from current experiment")
+    logger.info("Connecting to MLflow tracking server")
     client = MlflowClient(tracking_uri=tracking_uri)
-    candidates = client.search_runs(
-        experiment_ids=client.get_experiment_by_name(experiment_name).experiment_id,
-        # filter_string='metrics.rmse_valid < 6.5 and metrics.inference_time < 20e-6',
+
+    # Retrieve top-performing runs
+    logger.info(f"Fetching best runs from experiment '{experiment_name}'")
+    experiment = client.get_experiment_by_name(experiment_name)
+    if experiment is None:
+        raise ValueError(f"Experiment '{experiment_name}' not found.")
+
+    runs = client.search_runs(
+        experiment_ids=[experiment.experiment_id],
         run_view_type=ViewType.ACTIVE_ONLY,
-        max_results=5,
-        order_by=["metrics.rmse_valid ASC"],
+        order_by=["metrics.mae_valid ASC"],
+        max_results=1,
     )
 
-    # Register and stage best model
-    logger.info("Registering and staging best model")
-    best_model = candidates[0]
-    experiment_id = best_model.info.experiment_id
-    run_id = best_model.info.run_id
+    if not runs:
+        raise ValueError("No valid runs found in the experiment.")
+
+    best_run = runs[0]
+    run_id = best_run.info.run_id
+    experiment_id = best_run.info.experiment_id
+
+    # Register model
+    model_name = f"EmotionRecognitionModel-{run_id}"
+    logger.info(f"Registering model as: {model_name}")
     try:
         registered_model = mlflow.register_model(
-            model_uri=f"runs:/{best_model.info.run_id}/model",
-            name=f"CITIBIKESDurationModel-{run_id}",
+            model_uri=f"runs:/{run_id}/model",
+            name=model_name,
         )
     except Exception:
-        client.create_registered_model(f"CITIBIKESDurationModel-{run_id}")
+        client.create_registered_model(model_name)
         registered_model = client.create_model_version(
-            name=f"CITIBIKESDurationModel-{run_id}",
+            name=model_name,
             source=f"s3://mlflow-models-artifact-store-cmd/{experiment_id}/{run_id}/artifacts/model",
             run_id=run_id,
         )
 
+    # Transition to staging
+    logger.info("Transitioning model to 'Staging'")
     client.transition_model_version_stage(
-        name=f"CITIBIKESDurationModel-{run_id}",
+        name=model_name,
         version=registered_model.version,
         stage="Staging",
     )
 
-    # Update description of staged model
-    logger.info("Updating description of staged model")
+    # Add description
+    logger.info("Updating model version description")
     client.update_model_version(
-        name=f"CITIBIKESDurationModel-{run_id}",
+        name=model_name,
         version=registered_model.version,
-        description=f"[{datetime.now()}] The model version {registered_model.version} from experiment '{experiment_name}' was transitioned to Staging.",
+        description=f"[{datetime.now()}] Model transitioned to Staging from experiment '{experiment_name}'.",
     )
 
 
 @flow(name="mlflow-staging", task_runner=SequentialTaskRunner())
 def main(tracking_uri, experiment_name):
-    # Stage best model
     stage_model(tracking_uri=tracking_uri, experiment_name=experiment_name)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tracking_uri", help="Mlflow tracking uri.")
-    parser.add_argument("--experiment_name", help="mlflow tracking experiment name.")
+    parser.add_argument("--tracking_uri", help="MLflow tracking URI.")
+    parser.add_argument("--experiment_name", help="MLflow experiment name.")
     args = parser.parse_args()
 
-    parameters = {
-        "tracking_uri": args.tracking_uri,
-        "experiment_name": args.experiment_name,
-    }
-    main(**parameters)
+    main(tracking_uri=args.tracking_uri, experiment_name=args.experiment_name)

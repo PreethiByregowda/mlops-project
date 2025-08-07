@@ -1,125 +1,127 @@
-# MLOPS PROJECT (End to End)
+# 🧠 Emotion Recognition - MLOps Project (End-to-End)
 
-This is project for the [MLOps ZoomCamp](https://github.com/DataTalksClub/mlops-zoomcamp) course [here](https://github.com/DataTalksClub/mlops-zoomcamp/blob/main/07-project/README.md) sponsored by [DataTalks.Club](https://datatalks.club/)
+This is a full end-to-end MLOps project that builds, tracks, orchestrates, and deploys a machine learning model to recognize **emotions from text** using FastAPI and Docker.
 
-## Problem
-This is a simple end-to-end mlops project which takes data from [capital bikeshare](https://ride.capitalbikeshare.com/system-data) and transforms it with machine learning pipelines from training, model tracking and experimenting with [mlflow](https://mlflow.org/docs/latest/index.html#), ochestration with [prefect](https://orion-docs.prefect.io/) as workflow tool to deploying the model as a web service.
+---
 
-The project runs locally and uses AWS S3 buckets to store model artifacts during model tracking and experimenting with mlflow.
+## 💡 Problem
 
-## Dataset
+This project demonstrates a robust MLOps pipeline that:
 
-The chosen dataset for this project is the [Capital Bikeshare Data](https://s3.amazonaws.com/capitalbikeshare-data/index.html)
+- Trains a text-based emotion recognition model.
+- Tracks experiments and models with [MLflow](https://mlflow.org).
+- Orchestrates workflows using [Prefect](https://orion-docs.prefect.io/).
+- Deploys a trained model as a web service using [FastAPI](https://fastapi.tiangolo.com/) and Docker.
+- Optionally stores model artifacts in AWS S3.
 
-## Improvements
-In the future I hope to improve the project by having the entire infrastructure moved to cloud using AWS cloud(managing the infrastructure with iac tools such as terraform), have model deployment as either batch or streaming with AWS lambda and kinesis streams, a comprehesive model monitoring.
+---
 
-## Project Setup
+## 📦 Dataset
 
-Clone the project from the repository
+We use a labeled emotion dataset for training and validation. You can preprocess the dataset using the provided `emotion_dataset_load.ipynb` notebook.
 
+---
+
+## 🚀 Project Setup
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/emotion-recognition-mlops.git
+cd emotion-recognition-mlops
 ```
-git clone https://github.com/PatrickCmd/mlops-project.git
-```
 
-Change to mlops-project directory
-
-```
-cd mlops-project
-```
-
-Setup and install project dependencies
-
-```
+### 2. Install dependencies
+```bash
 make setup
 ```
 
-Add your current directory to python path
-
-```
+### 3. Add current directory to Python path
+```bash
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
 ```
 
-### Start Local Prefect Server
+### 3. Set up environment variables
+No environment variables are required for local development. 
 
-In a new terminal window or tab run the command below to start prefect orion server
-
-
+### 4. Train & Register the Model
+#### Train the model locally
+```bash
+python main.py
 ```
-prefect orion start
-```
-
-### Start Local Mlflow Server
-
-The mlflow points to S3 bucket for storing model artifacts and uses sqlite database as the backend end store
-
-Create an S3 bucket and export the bucket name as an environment variable as shown below
-
-In a new terminal window or tab run the following commands below
-
-```
-export S3_BUCKET_NAME=bucket_name
+#### Register & Stage the Best Model
+```bash
+python stage.py --tracking_uri http://127.0.0.1:5000 --experiment_name your_experiment_name
 ```
 
-Start the mlflow server
-
-```
-mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root s3://${S3_BUCKET_NAME} --artifacts-destination s3://${S3_BUCKET_NAME}
-```
-
-### Running model training and model registery staging pipelines locally
-
-#### Model training
-
-```
-python main.py --train_file 202204-capitalbikeshare-tripdata.zip --valid_file 202205-capitalbikeshare-tripdata.zip
-```
-
-![model-tracking](./images/model-tracking.png)
-
-![Flow runs](./images/flow_runs.png)
-
-### Register and Stage model 
-
-```
-python stage.py --tracking_uri http://127.0.0.1:5000 --experiment_name valid_experiment_name
-```
-
-![Register model](./images/register-model.png)
-
-
-### Create scheduled deployments and agent workers to start the deployments
-
-```
+### 5. Orchestrate with Prefect
+#### Create deployments
+```bash
 prefect deployment create deployments.py
-````
-
-![deployments](./images/deployments.png)
-
-Create work queues
-
 ```
+#### Create work queues
+```bash
 prefect work-queue create -t "ml-training" ml-training-queue
 prefect work-queue create -t "ml-staging" ml-staging-queue
 ```
-
-![work queue](./images/work-queues.png)
-
-![training queue](./images/ml-training-queue.png)
-
-![staging queue](./images/ml-staging-queue.png)
-
-Run deployments locally to schedule pipeline flows
-
+#### Run Prefect Orion server
+```bash
+prefect orion start
 ```
+Access the Prefect UI at: http://localhost:4200
+#### Trigger scheduled deployments
+```bash
 prefect deployment run mlflow-training/deploy-mlflow-training
 prefect deployment run mlflow-staging/deploy-mlflow-staging
 ```
 
-![scheduled_flow_runs](./images/scheduled_flow_runs.png)
+### 6. Deploy the Web Service
+Navigate to the web_service/ directory and build the Docker image:
+```bash
+cd web_service
+make build_webservice
+```
+This will:
+- Build the Docker image
+- Run code quality checks
+- Expose the service at http://localhost:9696
 
+### 7. Run the test client
+You can run the test client to verify the model predictions:
+```bash
+python test.py
+```
 
+## 📂 Project Structure
+```
+.
+├── emotion_dataset_load.ipynb       # Data loading and preprocessing
+├── main.py                          # Training pipeline
+├── stage.py                         # Model registration/staging
+├── deployments.py                   # Prefect deployment config
+├── mlflow.db                        # MLflow local backend
+├── model/
+│   └── model-rgr.pkl                # Saved model
+├── utils/
+│   └── prepare.py                   # Feature engineering logic
+├── web_service/
+│   ├── Dockerfile
+│   ├── Makefile
+│   ├── Pipfile / Pipfile.lock
+│   ├── app/
+│   │   └── main.py                  # FastAPI app
+│   ├── emotion_model/
+│   │   ├── predict.py               # Model inference
+│   │   └── utils.py                 # Text preprocessing
+│   └── test.py                      # Request test script
+```
 
-## Deploy model as a web service locally
+## 🚀 Run FastAPI Web Service Locally
 
-Change to `webservice` directory and follow the instructions [here](https://github.com/PatrickCmd/mlops-project/blob/main/web_service/README.md)
+If you prefer to run the FastAPI app without Docker, follow these steps::
+
+```bash
+pipenv install
+mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
