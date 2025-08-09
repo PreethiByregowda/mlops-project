@@ -125,7 +125,7 @@ Detailed view of deployments and task runs:
 
 Visualize model registration and lifecycle stages:
 
-<img src="images/Model UI.png" alt="Model Management UI" width="400"/>
+<img src="images/Model UI.png" alt="Model Management UI" width="600"/>
 
 ## 📂 Project Structure
 ```
