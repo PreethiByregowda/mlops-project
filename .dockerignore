@@ -1,0 +1,28 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environments
+env/
+venv/
+
+# Ignore Git files
+.git/
+.gitignore
+
+# Ignore Dockerfiles, compose files
+Dockerfile
+docker-compose.yml
+
+# Ignore local env files
+.env
+*.env
+
+# Ignore MLflow DB and logs (optional, large files)
+mlflow.db
+mlruns/
+
+# Ignore Jupyter notebook checkpoints and outputs (optional)
+.ipynb_checkpoints/

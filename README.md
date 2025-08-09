@@ -2,7 +2,6 @@
 
 This is a full end-to-end MLOps project that builds, tracks, orchestrates, and deploys a machine learning model to recognize **emotions from text** using FastAPI and Docker.
 
----
 
 ## 💡 Problem
 
@@ -14,13 +13,15 @@ This project demonstrates a robust MLOps pipeline that:
 - Deploys a trained model as a web service using [FastAPI](https://fastapi.tiangolo.com/) and Docker.
 - Optionally stores model artifacts in AWS S3.
 
----
 
 ## 📦 Dataset
 
-We use a labeled emotion dataset for training and validation. You can preprocess the dataset using the provided `emotion_dataset_load.ipynb` notebook.
+We use a labeled emotion dataset for training and validation. You can preprocess the dataset using the provided `goemotion_dataset.ipynb` notebook.
 
----
+
+## Architecture Overview
+
+<img src="images/MLOps Architecture Flowchart.png" alt="MLOps Architecture" width="400"/>
 
 ## 🚀 Project Setup
 
@@ -41,10 +42,10 @@ make setup
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
 ```
 
-### 3. Set up environment variables
+### 4. Set up environment variables
 No environment variables are required for local development. 
 
-### 4. Train & Register the Model
+### 5. Train & Register the Model
 #### Train the model locally
 ```bash
 python main.py
@@ -54,7 +55,7 @@ python main.py
 python stage.py --tracking_uri http://127.0.0.1:5000 --experiment_name your_experiment_name
 ```
 
-### 5. Orchestrate with Prefect
+### 6. Orchestrate with Prefect
 #### Create deployments
 ```bash
 prefect deployment create deployments.py
@@ -75,7 +76,7 @@ prefect deployment run mlflow-training/deploy-mlflow-training
 prefect deployment run mlflow-staging/deploy-mlflow-staging
 ```
 
-### 6. Deploy the Web Service
+### 7. Deploy the Web Service
 Navigate to the web_service/ directory and build the Docker image:
 ```bash
 cd web_service
@@ -86,11 +87,50 @@ This will:
 - Run code quality checks
 - Expose the service at http://localhost:9696
 
-### 7. Run the test client
+### 8. Run the test client
 You can run the test client to verify the model predictions:
 ```bash
 python test.py
 ```
+## 🖥️ User Interfaces
+
+### FastAPI Web Service UI
+
+Interact with the deployed model via the FastAPI web interface:
+
+<img src="images/FastApi UI.png" alt="FastAPI UI" width="400"/>
+
+Example prediction request screen:
+
+<img src="images/FastApi UI 2.png" alt="FastAPI Prediction Example" width="400"/>
+
+---
+
+### MLflow Experiment Tracking UI
+
+Track experiments, compare runs, and manage models with MLflow:
+
+<img src="images/MLflow UI.png" alt="MLflow UI" width="400"/>
+
+---
+
+### Prefect Orion Workflow Orchestration UI
+
+Monitor and manage your workflows using Prefect Orion:
+
+<img src="images/Prefect UI 1.png" alt="Prefect Orion Dashboard" width="400"/>
+
+Detailed view of deployments and task runs:
+
+<img src="images/Prefect UI 2.png" alt="Prefect Deployment Details" width="400"/>
+
+---
+
+### Model Management UI
+
+Visualize model registration and lifecycle stages:
+
+<img src="images/Model UI.png" alt="Model Management UI" width="400"/>
 
 ## 📂 Project Structure
 ```
@@ -125,3 +165,9 @@ pipenv install
 mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000
 uvicorn main:app --host 127.0.0.1 --port 8000
 ```
+
+| Component               | UI URL (Default)                    | Notes                                                  | Docker Image / Location                                 |
+| ----------------------- | ----------------------------------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| **MLflow Tracking UI**  | `http://localhost:5000`             | MLflow UI for experiment tracking                      | Runs locally or in a container (mlflow image or custom) |
+| **Prefect Orion UI**    | `http://localhost:4200`             | Prefect’s orchestration UI                             | Runs locally or in Prefect agent container              |
+| **FastAPI Web Service** | `http://localhost:8000` | Your deployed model API & Swagger UI (auto at `/docs`) | Custom web\_service Docker image (your FastAPI app)     |

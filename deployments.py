@@ -1,24 +1,29 @@
-from datetime import datetime, timedelta
-from prefect.deployments import Deployment, FlowScript
-from prefect.orion.schemas.schedules import CronSchedule, IntervalSchedule
+from main import mlflow_training
+from stage import mlflow_staging
+from datetime import timedelta, datetime
 
 date_str = datetime.today().strftime("%Y-%m-%d")
 
-Deployment(
-    name="deploy-mlflow-training",
-    schedule=IntervalSchedule(interval=timedelta(days=7)),  # weekly training
-    flow=FlowScript(path="./main.py", name="mlflow-training"),
-    parameters={},  # no parameters needed
-    tags=["ml-training", "emotion-recognition"],
+# Deploy training flow (no schedule)
+mlflow_training.deploy(
+    name="mlflow-training-deployment",
+    work_pool_name="docker-pool",
+    image="preethibyregowda/mlops-project:latest",
+    push=False,  # 👈 Don't try to push or build a Docker image
+    build=False,
+    tags=["training", "ml"],
 )
 
-Deployment(
-    name="deploy-mlflow-staging",
-    schedule=CronSchedule(cron="0 9 1 * *"),  # monthly staging run
-    flow=FlowScript(path="./stage.py", name="mlflow-staging"),
+# Deploy staging flow (no schedule)
+mlflow_staging.deploy(
+    name="mlflow-staging-deployment",
+    work_pool_name="docker-pool",
+    image="preethibyregowda/mlops-project:latest",
+    push=False,  # 👈 Don't try to push or build a Docker image
+    build=False,
     parameters={
-        "tracking_uri": "http://127.0.0.1:5000",
-        "experiment_name": f"emotion-recognition-experiment-{date_str}",
+    "tracking_uri": "http://172.20.255.182:5000",
+    "experiment_name": f"emotion-recognition-experiment-{date_str}",
     },
-    tags=["ml-staging", "emotion-recognition"],
+    tags=["staging", "ml"],
 )

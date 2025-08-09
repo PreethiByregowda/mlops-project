@@ -8,8 +8,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from prefect.task_runners import SequentialTaskRunner
 from collections import Counter
+import os
 
 import pandas as pd
 import ast
@@ -122,10 +122,10 @@ def process_data():
 
     return X_train, y_train, X_valid, y_valid
 
-@flow(name="mlflow-training", task_runner=SequentialTaskRunner())
-def main():
+@flow(name="mlflow_training")
+def mlflow_training():
     # Set MLflow tracking server URI and experiment name
-    mlflow.set_tracking_uri("http://127.0.0.1:5000")
+    mlflow.set_tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
     mlflow.set_experiment(f"goemotions-classification-{datetime.now().strftime('%Y-%m-%d')}")
 
     logger = get_run_logger()
@@ -138,4 +138,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    mlflow_training()

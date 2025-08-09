@@ -47,7 +47,7 @@ pipeline = Pipeline([
 ])
 
 # ---------- MLflow Setup ----------
-mlflow.set_tracking_uri("file:./mlruns")
+mlflow.set_tracking_uri("http://172.20.255.182:5000")
 mlflow.set_experiment("goemotions-classification-2025-08-06")
 
 with mlflow.start_run():

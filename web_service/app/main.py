@@ -9,7 +9,7 @@ import mlflow
 from emotion_model import predict
 
 # ---------------- CONFIG ----------------
-MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 EXPERIMENT_NAME = "goemotions-classification-2025-08-06"
 
 # ---------------- LOAD MODEL ----------------

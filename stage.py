@@ -6,8 +6,6 @@ import mlflow
 from prefect import flow, task, get_run_logger
 from mlflow.entities import ViewType
 from mlflow.tracking import MlflowClient
-from prefect.task_runners import SequentialTaskRunner
-
 
 @task(name="Register and stage best emotion model")
 def stage_model(tracking_uri, experiment_name):
@@ -70,8 +68,8 @@ def stage_model(tracking_uri, experiment_name):
     )
 
 
-@flow(name="mlflow-staging", task_runner=SequentialTaskRunner())
-def main(tracking_uri, experiment_name):
+@flow(name="mlflow_staging")
+def mlflow_staging(tracking_uri, experiment_name):
     stage_model(tracking_uri=tracking_uri, experiment_name=experiment_name)
 
 
@@ -81,4 +79,4 @@ if __name__ == "__main__":
     parser.add_argument("--experiment_name", help="MLflow experiment name.")
     args = parser.parse_args()
 
-    main(tracking_uri=args.tracking_uri, experiment_name=args.experiment_name)
+    mlflow_staging(tracking_uri=args.tracking_uri, experiment_name=args.experiment_name)
