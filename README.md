@@ -18,11 +18,6 @@ This project demonstrates a robust MLOps pipeline that:
 
 We use a labeled emotion dataset for training and validation. You can preprocess the dataset using the provided `goemotion_dataset.ipynb` notebook.
 
-
-## Architecture Overview
-
-<img src="images/MLOps Architecture Flowchart.png" alt="MLOps Architecture" width="400"/>
-
 ## 🚀 Project Setup
 
 ### 1. Clone the repository
@@ -98,11 +93,11 @@ python test.py
 
 Interact with the deployed model via the FastAPI web interface:
 
-<img src="images/FastApi UI.png" alt="FastAPI UI" width="400"/>
+<img src="images/FastApi UI.png" alt="FastAPI UI" width="600"/>
 
 Example prediction request screen:
 
-<img src="images/FastApi UI 2.png" alt="FastAPI Prediction Example" width="400"/>
+<img src="images/FastApi UI 2.png" alt="FastAPI Prediction Example" width="600"/>
 
 ---
 
@@ -110,7 +105,7 @@ Example prediction request screen:
 
 Track experiments, compare runs, and manage models with MLflow:
 
-<img src="images/MLflow UI.png" alt="MLflow UI" width="400"/>
+<img src="images/MLflow UI.png" alt="MLflow UI" width="600"/>
 
 ---
 
@@ -118,11 +113,11 @@ Track experiments, compare runs, and manage models with MLflow:
 
 Monitor and manage your workflows using Prefect Orion:
 
-<img src="images/Prefect UI 1.png" alt="Prefect Orion Dashboard" width="400"/>
+<img src="images/Prefect UI 1.png" alt="Prefect Orion Dashboard" width="600"/>
 
 Detailed view of deployments and task runs:
 
-<img src="images/Prefect UI 2.png" alt="Prefect Deployment Details" width="400"/>
+<img src="images/Prefect UI 2.png" alt="Prefect Deployment Details" width="600"/>
 
 ---
 
