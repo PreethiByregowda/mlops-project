@@ -11,8 +11,6 @@ This project demonstrates a robust MLOps pipeline that:
 - Tracks experiments and models with [MLflow](https://mlflow.org).
 - Orchestrates workflows using [Prefect](https://orion-docs.prefect.io/).
 - Deploys a trained model as a web service using [FastAPI](https://fastapi.tiangolo.com/) and Docker.
-- Optionally stores model artifacts in AWS S3.
-
 
 ## 📦 Dataset
 
