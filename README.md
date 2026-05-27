@@ -9,7 +9,7 @@ Designed with a focus on workflow orchestration, deployment reliability, observa
 
 This project demonstrates a robust MLOps pipeline that:
 
-- Trains a text-based emotion recognition model.
+- Trains and operationalizes an NLP inference workflow.
 - Tracks experiments and models with [MLflow](https://mlflow.org).
 - Orchestrates workflows using [Prefect](https://orion-docs.prefect.io/).
 - Deploys a trained model as a web service using [FastAPI](https://fastapi.tiangolo.com/) and Docker.
@@ -27,7 +27,17 @@ Key capabilities include:
 - Scalable infrastructure patterns for operational ML systems
 - Reliability-focused workflow design with monitoring and operational visibility
 
-<img src="images/Architecture.png" alt="Architecture"/>
+<p align="center">
+  <img src="images/Architecture.png" alt="Architecture"/>
+</p>
+
+## ⚙️ Design Decisions
+
+- Prefect was selected for lightweight workflow orchestration and deployment scheduling.
+- MLflow provides experiment tracking, model lifecycle management, and reproducibility.
+- FastAPI enables lightweight, containerized inference serving with automatic API documentation.
+- Dockerized deployment workflows improve portability and deployment consistency.
+- The platform was designed with operational scalability, observability, and workflow automation in mind.
 
 ## 📦 Dataset
 
@@ -181,3 +191,12 @@ uvicorn main:app --host 127.0.0.1 --port 8000
 | **MLflow Tracking UI**  | `http://localhost:5000`             | MLflow UI for experiment tracking                      | Runs locally or in a container (mlflow image or custom) |
 | **Prefect Orion UI**    | `http://localhost:4200`             | Prefect’s orchestration UI                             | Runs locally or in Prefect agent container              |
 | **FastAPI Web Service** | `http://localhost:8000` | Your deployed model API & Swagger UI (auto at `/docs`) | Custom web\_service Docker image (your FastAPI app)     |
+
+## 🔮 Future Improvements
+
+- Kubernetes-based deployment orchestration
+- OpenTelemetry tracing and centralized observability
+- Automated retraining and evaluation workflows
+- CI/CD integration using GitHub Actions
+- Distributed inference scaling
+- Model monitoring and drift detection
