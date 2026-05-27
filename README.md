@@ -27,7 +27,7 @@ Key capabilities include:
 - Scalable infrastructure patterns for operational ML systems
 - Reliability-focused workflow design with monitoring and operational visibility
 
-
+<img src="images/Architecture.png" alt="Architecture"/>
 
 ## 📦 Dataset
 
