@@ -37,6 +37,8 @@ Key capabilities include:
 
 **Why Docker for deployment:** Containerization ensures deployment consistency across environments, the same principle behind reducing deployment failures in production infrastructure. Portability was prioritized over performance optimization at this stage.
 
+**What I'd build next:** Kubernetes-based orchestration for horizontal scaling, OpenTelemetry for distributed tracing, and automated model drift detection - the same observability standards I've implemented for platform infrastructure applied to ML systems.
+
 ## 📦 Dataset
 
 We use a labeled emotion dataset for training and validation. You can preprocess the dataset using the provided `goemotion_dataset.ipynb` notebook.
