@@ -4,15 +4,11 @@ Production-oriented MLOps platform for orchestrating, tracking, deploying, and o
 
 Designed with a focus on workflow orchestration, deployment reliability, observability, and scalable AI infrastructure patterns.
 
-
 ## 💡 Problem
 
-This project demonstrates a robust MLOps pipeline that:
+ML engineering teams lose significant time to manual workflow orchestration, inconsistent experiment tracking, and fragile deployment pipelines. Without a reliable infrastructure layer, model iterations are slow, reproducibility breaks down, and production deployments carry unnecessary risk.
 
-- Trains and operationalizes an NLP inference workflow.
-- Tracks experiments and models with [MLflow](https://mlflow.org).
-- Orchestrates workflows using [Prefect](https://orion-docs.prefect.io/).
-- Deploys a trained model as a web service using [FastAPI](https://fastapi.tiangolo.com/) and Docker.
+This platform addresses that by providing a production-grade, self-service MLOps infrastructure - designed around the same principles that reduce developer toil in platform engineering: automation, observability, and reliable deployment workflows.
 
 ## 🏗️ Architecture Overview
 
@@ -31,13 +27,15 @@ Key capabilities include:
   <img src="images/Architecture.png" alt="Architecture"/>
 </p>
 
-## ⚙️ Design Decisions
+## 🧠 Product decisions
 
-- Prefect was selected for lightweight workflow orchestration and deployment scheduling.
-- MLflow provides experiment tracking, model lifecycle management, and reproducibility.
-- FastAPI enables lightweight, containerized inference serving with automatic API documentation.
-- Dockerized deployment workflows improve portability and deployment consistency.
-- The platform was designed with operational scalability, observability, and workflow automation in mind.
+**Why Prefect over Airflow:** Prefect's lightweight agent model reduces infrastructure overhead for teams that don't need a full Airflow cluster. The trade-off is less ecosystem maturity acceptable for teams prioritizing operational simplicity over feature breadth.
+
+**Why MLflow for experiment tracking:** MLflow provides the right balance of flexibility and standardization for model lifecycle management. It integrates cleanly with existing Python workflows without forcing a platform migration reducing adoption friction for ML teams.
+
+**Why FastAPI for inference serving:** FastAPI's automatic OpenAPI documentation and async support make it the right choice for developer-facing inference APIs. Prioritized developer experience and time-to-first-prediction over raw throughput optimization.
+
+**Why Docker for deployment:** Containerization ensures deployment consistency across environments, the same principle behind reducing deployment failures in production infrastructure. Portability was prioritized over performance optimization at this stage.
 
 ## 📦 Dataset
 
